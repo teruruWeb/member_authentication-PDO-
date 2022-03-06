@@ -1,0 +1,190 @@
+@charset 'utf-8';
+@import url(https://fonts.googleapis.com/earlyaccess/notosansjp.css);
+
+/* reset */
+*{box-sizing:border-box;}
+body{margin:0;}
+li{list-style:none;}
+a{text-decoration:none;}
+img{vertical-align:bottom;}
+
+/* responsive */
+@media(min-width:450px){}
+@media(min-width:670px){}
+@media(min-width:1200px){}
+
+/* body */
+body{
+  color:#2b546a;
+  background-color:#fafafa;
+}
+/* container */
+.container{
+  height:auto;
+  width:100%;
+  padding:30px 30px 25px 30px;
+  margin:50px auto;
+  background-color:#fff;
+  border:1px solid #d1d1d1;
+  border-radius:5px;
+  position:relative;
+}
+@media(min-width:600px){
+  .container{
+    height:auto;
+    width:600px;
+  }
+}
+/* error-Message */
+.error-message{
+  margin:20px 0 20px 0;
+  font:500 18px/1em 'Times New Roman',serif;
+  color:red;
+}
+@media(min-width:600px){
+  .error-message{
+    font:500 20px/1em 'Times New Roman',serif;
+  }
+}
+/* title */
+h1{
+  margin: 0;
+  font:500 24px/1em 'Times New Roman',serif;
+}
+@media(min-width:600px){
+  h1{
+    margin: 0;
+    font:500 30px/1em 'Times New Roman',serif;
+  }
+}
+/* read */
+p{
+  font:500 16px/1.7em 'Times New Roman',serif;
+}
+@media(min-width:600px){
+  p{
+    font:500 18px/1.7em 'Times New Roman',serif;
+  }
+}
+/* line */
+hr{
+  margin:30px 0 30px 0;
+  border:1px solid rgba(128, 128, 128, 0.673);
+}
+/* section-frame */
+.section-frame {
+  margin:0 0 40px 0;
+}
+/* label */
+label{
+  display:block;
+  margin:0 0 10px 0;
+}
+/* required */
+.required{
+  padding:0;
+  margin:0 10px 0 0;
+  font:500 20px/1.7em 'Times New Roman',serif;
+  color:#f33;
+  background-color:#fee;
+}
+/* optional */
+.optional{
+  padding:0;
+  margin:0 10px 0 0;
+  font:500 20px/1.7em 'Times New Roman',serif;
+  color:#33d9ff;
+  background-color:#eefff7;
+}
+/* input */
+input{
+  height:auto;
+  width:100%;
+  padding:8px;
+  font:500 20px/1.7em 'Times New Roman',serif;
+  border:none;
+  border-bottom:1px solid #d1d1d1;
+}
+/* button、input */
+button[type="submit"]{
+  outline:none;
+}
+/* button */
+.next-btn{
+  width:100%;
+  padding:15px;
+  margin:0 0 20px 0;
+  font:500 20px/1em 'Times New Roman',serif;
+  color:#fff;
+  background-color:rgba(32, 152, 243, 0.9);
+  border:none;
+  border-radius:5px;
+  box-shadow:0 5px 2px rgba(0, 0, 0, .4);
+  cursor:pointer;
+  display:block;
+}
+.next-btn:hover{
+  background-color:rgba(32, 152, 243, 1.0);
+}
+.next-btn:active{
+  position:relative;
+  top:5px;
+  box-shadow:none;
+}
+/* back-button */
+.back-btn{
+  width:100%;
+  padding:15px;
+  margin:0 0 20px 0;
+  font:500 20px/1em 'Times New Roman',serif;
+  text-align:center;
+  color: #fff;
+  background-color:rgba(27, 177, 112, 0.8);
+  border-radius:5px;
+  box-shadow:0 5px 2px rgba(0, 0, 0, .4);
+  cursor:pointer;
+  display:block;
+}
+.back-btn:hover{
+  background-color:rgba(27, 177, 112, 1.0);
+}
+.back-btn:active{
+  position:relative;
+  top:5px;
+  box-shadow:none;
+}
+/* confirm-information */
+.confirm-information{
+  font:500 20px/1em 'Times New Roman',serif;
+  color:#2b546a;
+}
+/* gender */
+.label-gender{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  margin:15px 0 0 0;
+}
+.radio-circle{
+  width:20px;
+}
+.radio-name-frame{
+  margin:10px 0px 10px 20px;
+  font:500 20px/1em 'Times New Roman',serif;
+}
+/* age */
+.age-frame{
+  height:30px;
+  padding:0 0 0 5px;
+  font:500 20px/1em 'Times New Roman',serif;
+}
+/* prefecture */
+.prefectures-frame{
+  height:30px;
+  padding:0 0 0 10px;
+  font:500 20px/1em 'Times New Roman',serif;
+}
+/* age、prefecture */
+option{
+  width:200px;
+}

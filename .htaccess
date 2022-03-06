@@ -1,0 +1,474 @@
+# パーミッション604または644
+
+# -------------------------------------------
+
+# Basic認証
+# AuthType Basic
+# AuthName "認証名"
+# パスワードファイルパス
+# AuthUserFile /path/.htpasswd
+# グループごとでアクセス制限なし
+# AuthGroupFile /dev/null
+# 入力したIDとパスワードが合っていればアクセス可能
+# require valid-user
+
+# -------------------------------------------
+
+# <IfModule mod_rewrite.c>
+# RewriteEngine on
+
+# 301リダイレクト(サーバー移動やページ移動)
+# RewriteRule ^(.*)$ index.php [R=301]
+# RewriteRule ^(.*)$ https://example.com/index.php [R=301]
+
+# 302リダイレクト(メンテナンスページへリダイレクト)
+# RewriteRule ^(.*)$ index.php [R]
+# RewriteRule ^(.*)$ index.php [R=302]
+# RewriteRule ^(.*)$ https://example.com/index.php
+
+
+# http→httpsに統一
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://example.com/$1 [R=301,L]
+
+# wwwなし統一
+# RewriteCond %{HTTP_HOST} ^www\.example\.com [NC]
+# RewriteRule ^(.*)$ https://example.com/$1 [R=301,L]
+
+# wwwあり統一
+# RewriteCond %{HTTP_HOST} ^example\.com [NC]
+# RewriteRule ^(.*)$ https://www.example.com/$1 [R=301,L]
+
+# index.html、index.phpアクセス不可
+# RewriteCond %{THE_REQUEST} ^.*/index.(html|php)
+# RewriteRule ^(.*)index.(html|php)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# index.php表示
+# RewriteEngine On
+# RewriteBase /
+# RewriteRule ^(.*?)/?index\.php$ $1 [NC,R=301,L]
+
+# ティザーページ表示
+# 年月日時間まではティザーページ表示
+# RewriteCond %{TIME} <202202180900.*
+# 除外IPアドレス1
+# RewriteCond %{REMOTE_ADDR} !=XXX.XXX.XXX.1
+# 除外IPアドレス2
+# RewriteCond %{REMOTE_ADDR} !=XXX.XXX.XXX.2
+# 除外ファイル
+# RewriteCond %{REQUEST_URI} !\.(css|jpe?g|png|js|gif|swf|ico)$
+# ティザーページ除外
+# RewriteCond %{REQUEST_FILENAME} !teaser\.php
+# ティザーページ一時的なリダイレクト
+# RewriteRule ^.*$ /teaser.php [R,L]
+
+# 存在しないファイルを全てアプリ処理(wordpress、フレームワーク等で一般)
+# RewriteRule ^index\.php$ - [L]
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule . /index.php [L]
+# </IfModule>
+
+# 404 NotFound(ページ不明)
+# ErrorDocument 404 /404.php
+# ErrorDocument 404 http://404.example.com/
+# 400 BadRequest（不正な要求）
+# ErrorDocument 400 /400.php
+# 401 Unauthorixed（ベーシック認証等で認証失敗）
+# ErrorDocument 401 /401.php
+# 403 Forbidden（アクセス権限なし）
+# ErrorDocument 403 /403.php
+# 500 InternalServerError(サーバーエラー)
+# ErrorDocument 500 /500.php
+# 502 Bad Gateway(Gatewayやプロキシなどネットワークの途中に問題発生)
+# ErrorDocument 502 /502.php
+# 503 Service Unavailable(アクセス過多やメンテナンス中など、事情によりアクセス不可)
+# ErrorDocument 503 /503.php
+
+# -------------------------------------------
+
+# すべてのオプション無効
+# Options None
+# すべてのオプションを有効
+# Options all
+# ExecCGIとFollowSymlinksのみを有効
+# Options ExecCGI FollowSymlinks
+# ExecCGIを有効、Indexes無効
+# Options +ExecCGI -Indexes
+# シンボリックリンクを有効
+# Options +FollowSymlinks
+# /で終わるURIだった場合にファイル一覧を表示可否。ディレクトリ内に何があるか丸見えになる。
+# Options -Indexes
+# CGI使用可能
+# Options +ExecCGI
+# AddHandler cgi-script cgi
+# AddType application/x-httpd-cgi .cgi .pl
+# SSI使用可能
+# Options +Includes
+# コンテントネゴシエーションを有効
+# Accept-Languageヘッダ値に応じて英語ページや日本語ページを表示させるということが可能
+# Options Allが指定されていてもMultiViews機能は有効にならない
+# Options +MultiViews
+
+# 最初にアクセスするファイル
+# Options -Indexes
+# DirectoryIndex index.php
+
+# ディレクトリアクセス不可
+# Options All -Indexes
+# ディレクトリ一覧を表示しない命令
+# IndexIgnore .htaccess */.??* *~ *# */HEADER* */README* */_vti*
+
+# .htaccess,htpasswordファイルへ直接アクセス不可(Apacheデフォルト設定済み)
+# <FilesMatch "^¥.ht">
+#   Order allow,deny
+#   Deny from all
+# </FilesMatch>
+
+# log、iniファイルへ直接アクセス不可
+# <Files ~ "\.(log|csv|ini|dat|tpl|yml)$">
+#   Deny from all
+# </Files>
+
+# php、js、cssファイルへ直接アクセス不可
+# <Files ~ "\.(php|js|css)$">
+#   Deny from all
+# </Files>
+
+# -------------------------------------------
+
+# public 全てのユーザーに共通キャッシュ
+# private 特定ユーザーの個人情報が含まれるページで使用
+# no-store キャッシュ不可
+# no-cache キャッシュしたものが今でも更新されずに有効かどうかが確認できなければそのキャッシュ使用しない
+# must-revalidate Webサーバに必ず問い合わせよという指示
+
+# キャッシュ(30日)を有効にする
+# Header set Cache-Control "public,max-age=2592000"
+
+# mod_expires.cを使用する場合には、mod_headers設定が必須
+# max-age設定不要
+# <ifModule mod_headers.c>
+#   <filesMatch "\.(ico|jpeg|png|gif|swf)$">
+#     Header set Cache-Control "public"
+#   </filesMatch>
+#   <filesMatch "\.(css)$">
+#     Header set Cache-Control "public"
+#   </filesMatch>
+#   <filesMatch "\.(js)$">
+#     Header set Cache-Control "private"
+#   </filesMatch>
+#   <filesMatch "\.(html|php)$">
+#     Header set Cache-Control "private,must-revalidate"
+#   </filesMatch>
+# </ifModule>
+
+# html、PHPキャッシュ不可
+# キャッシュ有効期限を過去に設定
+# mod_headers
+# <Files ~ "\.(html|php)$">
+#   <IfModule mod_headers.c>
+#     Header set Pragma no-cache
+#     Header set Cache-Control no-cache
+#     Header set Expires "Thu, 01 Dec 1994 16:00:00 GMT"
+#   </IfModule>
+# </Files>
+
+# ブラウザXSSフィルター
+# Header set X-XSS-Protection "1;mode=block"
+# クリックジャンキング対策(ページをフレーム内に表示不可)
+# Header set X-Frame-Options DENY
+# Header set X-Content-Type-Options nosniff
+
+# エンティティを検証するためのメカニズム(基本無効にする)
+<ifModule mod_headers.c>
+  Header unset ETag
+</ifModule>
+FileETag None
+
+# ブラウザキャッシュ設定(mod_expires.c)
+# <IfModule mod_expires.c>
+# ExpiresActive on
+# ExpiresDefault "access plus 1 month"
+# ExpiresByType audio/ogg "access plus 1 year"
+# ExpiresByType image/png "access plus 1 year"
+# ExpiresByType image/jpg "access plus 1 year"
+# ExpiresByType image/jpeg "access plus 1 year"
+# ExpiresByType image/gif "access plus 1 year"
+# ExpiresByType image/svg+xml "access plus 1 year"
+# ExpiresByType image/x-icon "access plus 1 year"
+# ExpiresByType image/vnd.microsoft.icon "access plus 1 year"
+# ExpiresByType image/bmp "access plus 1 year"
+# ExpiresByType image/gif "access plus 1 year"
+# ExpiresByType image/webp "access plus 1 year"
+# ExpiresByType video/mp4 "access plus 1 year"
+# ExpiresByType video/ogg "access plus 1 year"
+# ExpiresByType video/webm "access plus 1 year"
+# ExpiresByType text/html "access plus 0 seconds"
+# ExpiresByType text/css "access plus 1 month"
+# ExpiresByType text/javascript "access plus 1 month"
+# ExpiresByType text/xml "access plus 0 seconds"
+# ExpiresByType text/x-cross-domain-policy "access plus 1 month"
+# ExpiresByType application/javascript "access plus 1 month"
+# ExpiresByType application/x-javascript "access plus 1 month"
+# ExpiresByType application/pdf "access plus 1 month"
+# ExpiresByType application/x-shockwave-flash "access plus 1 month"
+# ExpiresByType application/json "access plus 0 seconds"
+# ExpiresByType application/ld+json "access plus 0 seconds"
+# ExpiresByType application/schema+json "access plus 0 seconds"
+# ExpiresByType application/vnd.geo+json "access plus 0 seconds"
+# ExpiresByType application/xml "access plus 0 seconds"
+# ExpiresByType application/atom+xml "access plus 1 month"
+# ExpiresByType application/rdf+xml "access plus 1 month"
+# ExpiresByType application/rss+xml "access plus 1 month"
+# ExpiresByType application/vnd.ms-fontobject "access plus 1 month"
+# ExpiresByType application/x-font-ttf "access plus 1 month"
+# ExpiresByType application/font-woff "access plus 1 month"
+# ExpiresByType application/x-font-woff "access plus 1 month"
+# ExpiresByType application/font-woff2 "access plus 1 month"
+# ExpiresByType font/opentype "access plus 1 month"
+# ExpiresByType font/woff "access plus 1 month"
+# ExpiresByType font/eot "access plus 1 month"
+# </IfModule>
+
+# server signature無効
+# ServerSignature Off
+
+# -------------------------------------------
+
+# ファイル圧縮設定 html、CSS、JS、フォントファイルなど各種ファイルを圧縮
+# <IfModule mod_deflate.c>
+# <IfModule mod_filter.c>
+# AddOutputFilterByType DEFLATE image/svg+xml
+# AddOutputFilterByType DEFLATE image/x-icon
+# AddOutputFilterByType DEFLATE text/html
+# AddOutputFilterByType DEFLATE text/css
+# AddOutputFilterByType DEFLATE text/javascript
+# AddOutputFilterByType DEFLATE text/xml
+# AddOutputFilterByType DEFLATE text/plain
+# AddOutputFilterByType DEFLATE application/xml
+# AddOutputFilterByType DEFLATE application/xhtml+xml
+# AddOutputFilterByType DEFLATE application/rss+xml
+# AddOutputFilterByType DEFLATE application/atom+xml
+# AddOutputFilterByType DEFLATE application/rdf+xml
+# AddOutputFilterByType DEFLATE application/javascript
+# AddOutputFilterByType DEFLATE application/x-font
+# AddOutputFilterByType DEFLATE application/x-font-opentype
+# AddOutputFilterByType DEFLATE application/x-font-otf
+# AddOutputFilterByType DEFLATE application/x-font-truetype
+# AddOutputFilterByType DEFLATE application/x-font-ttf
+# AddOutputFilterByType DEFLATE application/x-javascript
+# AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+# AddOutputFilterByType DEFLATE application/json
+# AddOutputFilterByType DEFLATE application/x-httpd-php
+# AddOutputFilterByType DEFLATE application/x-httpd-fastphp
+# AddOutputFilterByType DEFLATE font/opentype
+# AddOutputFilterByType DEFLATE font/otf
+# AddOutputFilterByType DEFLATE font/truetype
+# AddOutputFilterByType DEFLATE font/ttf
+# </IfModule>
+# </IfModule>
+
+# 画像劣化が気になる場合は画像圧縮OFF(サーバーにより使用出来ない)
+# <IfModule pagespeed_module>
+#   ModPagespeed on
+#   ModPagespeedDisableFilters rewrite_images
+# </IfModule>
+
+# -------------------------------------------
+
+# タイムゾーン
+php_value date.timezone "Asia/Tokyo"
+
+# 想定外の変数が登録されないようにする
+# php_flag register_globals Off
+# 入力データが自動的にエスケープ不可にする
+# php_flag magic_quotes_gpc Off
+
+# 文字化け対策＆UTF-7XSS対策
+# デフォルト文字コード設定
+php_value default_charset UTF-8
+# mbstring使用するデフォルト言語設定
+php_value mbstring.language Japanese
+# PHP内部エンコーディング文字コード設定
+php_value mbstring.internal_encoding UTF-8
+php_value mbstring.input_encoding pass
+php_value mbstring.output_encoding pass
+php_value mbstring.substitute_character none
+# デフォルト文字コード検出順序設定
+php_value mbstring.detect_order auto
+
+# セッションハイジャック対策(クッキーのみ使用)
+# php_flag session.use_trans_sid Off
+# php_flag session.use_cookies On
+# php_flag session.use_only_cookies On
+# JavaScriptのようなスクリプト言語からCookieへアクセス不可設定
+# php_flag session.cookie_httponly On
+# php_flag session.auto_start Off
+# HTTPS通信時にのみCookie送信可能
+# php_flag session.cookie_secure On
+# Cookieが有効なパス設定
+# ini_set("session.cookie_path", "/path/");
+# セッション有効期限設定
+# php_value session.cache_limiter none
+# php_value session.gc_divisor 1000
+# php_value session.gc_maxlifetime 10800
+# php_value session.gc_probability 1
+
+# エラー出力設定
+# エラー画面表示
+php_flag display_errors Off
+# PHPエラーレベル設定(2047)
+# php_value error_reporting 2047
+# PHPエラーレベル設定(Max6135)
+# php_value error_reporting 6135
+# php_flag display_startup_errors Off
+# エラーファイル表示
+php_flag log_errors On
+# エラーファイル表示
+php_value error_log "/error_logs/error.log"
+
+# メモリ上限設定(デフォルト)
+# php_value memory_limit 128M
+# メモリ上限設定(上限なし)
+# php_value memory_limit -1
+# POST最大サイズ(デフォルト)
+# php_value post_max_size 8M
+# POST最大サイズ(64M)
+# php_value post_max_size 64M
+# ファイルアップロードサイズ(デフォルト)
+# php_value upload_max_filesize 2M
+# ファイルアップロードサイズ(10M)
+# php_value upload_max_filesize 10M
+# 連携して使用しないと適用されない
+php_value memory_limit 128M
+php_value post_max_size 64M
+php_value upload_max_filesize 10M
+
+# スクリプト強制終了されるまでの最大時間(秒)
+php_value max_execution_time 60
+
+# データ専用の記憶領域一時的保存設定
+php_flag output_buffering On
+# データ専用の記憶領域一時的保存設定(バイト設定)
+# php_flag output_buffering 4096
+
+# POSTやGETなどで送信できるデータ数上限設定(デフォルト)
+php_value max_input_vars 1000
+
+# PHPタグ短縮型を有効・無効設定(基本的にOff)
+php_flag short_open_tag Off
+
+# -------------------------------------------
+
+# クローラー(360spider)対策
+# <IfModule mod_setenvif.c>
+# BrowserMatch "\s360Spider$" bad_bot
+# BrowserMatch "https?://(www\.)?cognitiveseo[\./]" bad_bot
+# BrowserMatch ";\s?MJ12bot[ /;\+\)]" bad_bot
+# BrowserMatch "^rogerbot[ /;\+]" bad_bot
+# BrowserMatch "^Scrapy[ /;\+]" bad_bot
+# BrowserMatch "^Screaming[ /;\+]" bad_bot
+# BrowserMatch ";\s?SemrushBot[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?SMTBot[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?spbot[ /;\+\)]" bad_bot
+# BrowserMatch "^vebidoobot$" bad_bot
+# BrowserMatch "^YisouSpider$" bad_bot
+# BrowserMatch "^ZoomBot[ /;\+]" bad_bot
+# BrowserMatch ";\s?AhrefsBot[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?MegaIndex\.ru[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?aiHitBot[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?BLEXBot[ /;\+\)]" bad_bot
+# BrowserMatch "^BOT[ /;\+]" bad_bot
+# BrowserMatch "^CCBot[ /;\+]" bad_bot
+# BrowserMatch "^CheckMarkNetwork[ /;\+]" bad_bot
+# BrowserMatch ";\s?Cliqzbot[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?coccocbot\-web[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?DeuSu[ /;\+\)]" bad_bot
+# BrowserMatch "^DomainStatsBot[ /;\+]" bad_bot
+# BrowserMatch ";\s?DotBot[ /;\+\)]" bad_bot
+# BrowserMatch "^Mozilla/[^ ]+ eCairn\-Grabber[ /;\+]" bad_bot
+# BrowserMatch ";\s?Exabot[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?FatBot[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?GrapeshotCrawler[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?HaosouSpider[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?linkdexbot[ /;\+\)]" bad_bot
+# BrowserMatch "^ltx71[ /;\+]" bad_bot
+# BrowserMatch ";\s?Mail\.RU_Bot[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?memoryBot[ /;\+\)]" bad_bot
+# BrowserMatch "^psbot[ /;\+]" bad_bot
+# BrowserMatch "^roboto$" bad_bot
+# BrowserMatch ";\s?SecurityResearch\.bot[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?SEOkicks\-Robot[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?SurdotlyBot[ /;\+\)]" bad_bot
+# BrowserMatch ";\s?WBSearchBot[ /;\+\)]" bad_bot
+# BrowserMatch "^Wotbox[ /;\+]" bad_bot
+# BrowserMatch ";\s?yoozBot\-2\.2[ /;\+\)]" bad_bot
+# Apache < 2.3
+# <IfModule !mod_authz_core.c>
+#   Order Allow,Deny
+#   Allow from all
+#   Deny from env=bad_bot
+# </IfModule>
+# Apache >= 2.3
+# <IfModule mod_authz_core.c>
+#   <RequireAll>
+#     Require all Granted
+#     Require not env bad_bot
+#   </RequireAll>
+# </IfModule>
+
+# -------------------------------------------
+
+# CGI を使えるようにする。
+# Options +ExecCGI
+# AddHandler cgi-script cgi
+# AddType application/x-httpd-cgi .cgi .pl .pm
+
+# 拡張子.htmlでPHPを動作
+# AddHandler php5-script .html
+
+# Webフォントがフォントとして認識されない
+# AddType font/opentype .otf
+# AddType font/eot .eot
+# AddType font/truetype .ttf
+# AddType application/font-woff .woff
+
+# PDFや動画などのファイルをダウンロードさせたい
+# AddType application/octet-stream .avi .mpg .mov .pdf .xls .mp4
+
+# SSI使用
+# Options +Includes
+# AddType text/html shtml
+# AddHandler server-parsed shtml
+
+# 拡張子.htmlでSSIを動作
+# AddHandler server-parsed html
+
+# CSS3をIE6.7.8で機能させる為のjavascript「PIE.htc」を認識させる
+# AddType text/x-component .htc
+# HLS(HTTP Live Streaming)
+# AddType application/x-mpegURL .m3u8
+# AddType video/MP2T .ts
+
+# WindowMediaメタファイル
+# AddType video/x-ms-wvx .wvx
+# AddType audio/x-ms-wax .wax
+# AddType video/x-ms-asf .asx
+# HDML
+# AddType text/x-hdml;charset=Shift_JIS hdml
+
+# ガラケー用動画
+# AddType audio/3gpp2 .3g2
+# AddType video/3gpp2 .3g2
+# AddType video/3gpp .3gp
+# AddType audio/3gpp .3gp
+# AddType application/x-smaf .mmf
+
+# 複数の拡張子(メタ情報)を定義
+# <FilesMatch \.cgi$>
+#   SetHandler cgi-script
+# </FilesMatch>
+
+# -------------------------------------------
+
